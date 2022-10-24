@@ -6,37 +6,9 @@ const { instanceAxios } = require( "../services/abstractApi" );
 const getInfosEmpresas = async ( req, res ) => {
     try {
         const { dominioEmpresa } = req.params;
-
-        const arquivoEmpresas = await fsPromise.readFile( "./src/json/empresas.json" );
-        // @ts-ignore
-        const empresas = JSON.parse( arquivoEmpresas );
-
-        for ( const empresa of empresas ) {
-            if ( empresa[ "domain" ] === dominioEmpresa ) {
-                return res.status( 400 ).json( `Dados do domínio ${dominioEmpresa} já foram salvos.` );
-            }
-        }
+        const { empresas } = req;
 
         const { data: infosEmpresa } = await instanceAxios.get( `?domain=${dominioEmpresa}` );
-
-        /* fs.open( "./src/json/empresasTeste.json", "r", ( err, fd ) => {
-            if ( err ) {
-                if ( err.code === "ENOENT" ) {
-                    console.error( "myfile does not exist" );
-                    return res.status( 400 ).json( "myfile does not exist" );
-                }
-
-                throw err;
-            }
-
-            try {
-                readMyData( fd );
-            } finally {
-                fs.close( fd, ( err ) => {
-                    if ( err ) throw err;
-                } );
-            }
-        } ); */
 
         empresas.push( infosEmpresa );
 
@@ -72,5 +44,5 @@ const getInfosEmpresas = async ( req, res ) => {
 };
 
 module.exports = {
-    getInfosEmpresas
+    getInfosEmpresas,
 };
