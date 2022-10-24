@@ -1,34 +1,13 @@
 const fsPromise = require( "fs/promises" );
 
-const { instanceAxios } = require( "../services/abstract" );
-
 const saveVote = async ( req, res ) => {
     try {
-        const { ip, pais } = req.params;
+        const { ip } = req.params;
+        const { votos } = req;
         const { voto } = req.body;
 
-        const { data: infosIP } = await instanceAxios.get( `?ip_address=${ ip }` );
-
-        if ( infosIP[ "country" ] === null ) {
-            return res.status( 400 ).json( `O IP ${ ip } não é válido.` );
-        }
-
-        if ( pais !== infosIP[ "country" ] ) {
-            return res.status( 400 ).json( `O IP ${ ip } não coincide com o país da votação ${ pais }, sendo assim não poderá votar.` );
-        }
-
-        const arquivoVotos = await fsPromise.readFile( "./src/json/votos.json" );
-        // @ts-ignore
-        const votos = JSON.parse( arquivoVotos );
-
-        for ( const voto of votos ) {
-            if ( voto[ "ip" ] === ip ) {
-                return res.status( 400 ).json( `O voto do IP ${ ip } já foi computado.` );
-            }
-        }
-
         votos.push( {
-            ip: infosIP[ "ip_address" ],
+            ip,
             voto
         } );
 
